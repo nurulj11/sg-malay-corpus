@@ -1,0 +1,33 @@
+Sub A1_DelTimeStamps_NameErrors()
+
+' Corrects #NAME? error by replacing cells that begin with =-
+' Deletes time markers and also cells with numbers
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+
+    ws.Activate
+    
+    'Corrects for the #NAME error formula due to the addition of =- at the start of the sentence.
+    'Removing =- will reveal the sentence instead of #NAME error in the cell
+    ActiveSheet.Columns("A:A").Replace What:="=-", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+
+    'Removes cells with timestamps and integers by
+    'filtering column A for integers greater or equal than 1 or cells with--, which represent cells with timestamps
+    ActiveSheet.Range("A:A").AutoFilter Field:=1, Criteria1:=">=1", _
+        Operator:=xlOr, Criteria2:="=*-->*"
+          
+    'Deletes cells that fulfil the criteria above
+    ActiveSheet.Range("A:A").SpecialCells(xlCellTypeVisible).Select
+    Selection.EntireRow.Delete
+    
+    'Deletes cells with blanks
+    ActiveSheet.Range("A:A").SpecialCells(xlCellTypeBlanks).Select
+    Selection.Delete shift:=xlUp
+   
+Next ws
+
+End Sub
